@@ -22,5 +22,14 @@ You can use the SQL code "SELECT title FROM Movie WHERE rating > 8.5;" to get
 the data you need. We won't be focusing on using SQL code in this class, but
 it is good to know that you can use it.
 '''
+import sqlite3
+conn = sqlite3.connect("movies.db")
+cursor = conn.cursor()
 
+cursor.execute("SELECT title FROM Movie WHERE rating > 8.5;")
+results = cursor.fetchall()
 
+for row in results:
+    print(row[0])
+
+conn.close()
