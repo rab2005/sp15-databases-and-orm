@@ -48,5 +48,43 @@ Create a simple task manager using Peewee and SQLite.
    description, and priority for each one
 '''
 
-# from peewee import *
-# Assume tasks.db and Task tables exist from previous exercise.
+import peewee as p
+
+db = p.SqliteDatabase("dogs.db")
+
+class Dog(p.Model):
+    dog_id = p.AutoField(primary_key=True)
+    name = p.CharField()
+    age = p.IntegerField()
+    fav_food = p.CharField(null=True)
+    
+    class Meta:
+        database = db
+
+db.connect()
+
+db.drop_tables([Dog])   # drop old table so schema stays fresh
+db.create_tables([Dog])
+
+dog1 = Dog.create(name="Sally", age=2, fav_food="yum")
+dog2 = Dog.create(name="Sjosy", age=2, fav_food="yum")
+
+# Read
+all_dogs = Dog.select()
+for dog_obj in all_dogs:
+    print(f"{dog_obj.name} is {dog_obj.age}")
+
+# Update Sally's favorite food
+Dog.update(fav_food="bones").where(Dog.name == "Sally").execute()
+print(f"\nUpdated Sally's favorite food to bones")
+
+# Delete Sjosy
+Dog.delete().where(Dog.name == "Sjosy").execute()
+print(f"Deleted Sjosy from the database")
+
+# Read again to confirm changes
+print("\nDogs after update and delete:")
+for dog_obj in Dog.select():
+    print(f"{dog_obj.name} is {dog_obj.age}, favorite food: {dog_obj.fav_food}")
+
+db.close()
